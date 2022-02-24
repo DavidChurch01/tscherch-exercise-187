@@ -1,0 +1,123 @@
+// David Tscherch
+// CPT 187
+// This program reads the file associated with users, and allows new customers to create accounts. It also checks for valid customer passwords when logging in.
+// 1/27/22
+package edu.cpt187.tscherch.exercise7;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
+
+public class UserAccounts 
+{
+	// declare and initialize all class attributes
+	private final int NOT_FOUND = -1;
+	private final int RESET_VALUE = 0;
+	private final int MAXIMUM_RECORDS = 50;
+	private final String[] userNames = new String[MAXIMUM_RECORDS];
+	private final String[] passwords = new String[MAXIMUM_RECORDS];
+	private int recordCount = 0;	
+	private int searchedIndex = 0;
+	private String masterFileName="";
+	// non default constructor
+	public UserAccounts(String borrowedFileName)
+	{
+		masterFileName = borrowedFileName;
+	}
+	// behavior to Handle File by loading into array
+	public void setUserAccountArrays()
+	{
+		try
+		{
+			// assignment statement
+			recordCount = RESET_VALUE;
+			Scanner infile = new Scanner (new FileInputStream(masterFileName));
+			// processes each variable in the file
+			while (infile.hasNext() == true && recordCount < MAXIMUM_RECORDS)
+			{
+				userNames[recordCount] = String.valueOf(infile.next());
+				passwords[recordCount] = String.valueOf(infile.next());
+				recordCount++;
+			} // END OF WHILE
+			infile.close();
+		}// END OF TRY
+		catch (IOException ex)
+		{
+			recordCount = NOT_FOUND;
+		} // END OF catch
+	} // END OF method
+	// Selection structure to test if user exist
+	public void  setSearchedIndex(String borrowedUserName)
+	{
+		searchedIndex = getSeqSearch(borrowedUserName);
+	}
+	// Setter to invoke search behavior with a selection structure
+	public void  setSearchedIndex(String borrowedUserName, String borrowedPassword)
+	{
+		searchedIndex = getSeqSearch(borrowedUserName);
+		if (searchedIndex >= RESET_VALUE && getPasswordMatch(borrowedPassword) == false)
+		{
+			searchedIndex = NOT_FOUND;
+		} // END OF IF
+	} // END OF SETTER
+	// Setter to append file
+	public void setWriteOneRecord(String borrowedUserName, String borrowedPassword)
+	{
+		// try block
+		try
+		{
+			PrintWriter filePW = new PrintWriter(new FileWriter(masterFileName, true));
+			filePW.printf("%n%s\t%s", borrowedUserName, borrowedPassword);
+			filePW.close();
+			recordCount++;
+		} // end of try
+		catch (IOException ex)
+		{
+			recordCount = NOT_FOUND;
+		} // END OF CATCH
+	} // END OF setter
+	// Initializes getter to return SeqSearch
+	public int getSeqSearch(String borrowedBorrowedUserName)
+	{
+		int localIndex = 0;
+		int localFound = NOT_FOUND;
+		// While Loop to increment searches found
+		while (localIndex < recordCount)
+		{
+			if (borrowedBorrowedUserName.equalsIgnoreCase(userNames[localIndex]))
+			{
+				localFound = localIndex;
+				localIndex = recordCount;
+				searchedIndex++;
+			} // END OF IF
+			localIndex++;
+		} // END OF WHILE
+		return localFound;
+	} // END OF get
+	// Initializes getter to compare passwords comparing case
+	public boolean getPasswordMatch(String borrowedBorrowedPassword)
+	{
+		return (borrowedBorrowedPassword.equals(passwords[searchedIndex]) == true);
+	} // END OF getter
+	// Initializes getter to return file name
+	public String getFileName()
+	{
+		return masterFileName;
+	} // END OF getter
+	// Initializes getter to return Maximum Records
+	public int getMaximumRecords()
+	{
+		return MAXIMUM_RECORDS;
+	} // END OF getter
+	// Initializes getter to return Record Count
+	public int getRecordCount()
+	{
+		return recordCount;
+	} // END OF getter
+	// Initializes getter to return SearchedIndex
+	public int getSearchedIndex()
+	{
+		return searchedIndex;
+	} // END OF getter
+} // END OF USER ACCOUNTS
